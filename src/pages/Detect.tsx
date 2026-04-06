@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { PhishingScanner } from "@/components/PhishingScanner";
 import { UserScanHistory } from "@/components/UserScanHistory";
-import { Shield, LogOut, History, Home } from "lucide-react";
+import { Shield, LogOut, History, Home, LayoutDashboard, Search } from "lucide-react";
 
 export default function Detect() {
   const { user, signOut } = useAuth();
@@ -17,7 +17,7 @@ export default function Detect() {
   };
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="min-h-screen bg-background relative pb-20 md:pb-0">
       {/* Ambient Background */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
@@ -29,7 +29,7 @@ export default function Detect() {
         <nav className="border-b border-border/50 backdrop-blur-sm bg-background/50 sticky top-0 z-50">
           <div className="container px-4 py-4 flex items-center justify-between">
             <div className="flex items-center gap-6">
-              <div 
+              <div
                 className="flex items-center gap-2 cursor-pointer"
                 onClick={() => navigate("/")}
               >
@@ -39,6 +39,7 @@ export default function Detect() {
                 </span>
               </div>
               <div className="hidden md:flex items-center gap-4">
+                {/* Order: Home → Dashboard → PhishGuard → History */}
                 <Button
                   variant="ghost"
                   size="sm"
@@ -51,10 +52,19 @@ export default function Detect() {
                 <Button
                   variant="ghost"
                   size="sm"
+                  onClick={() => navigate("/dashboard")}
+                  className="font-mono text-sm text-muted-foreground hover:text-foreground"
+                >
+                  <LayoutDashboard className="h-4 w-4 mr-2" />
+                  Dashboard
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
                   className="font-mono text-sm text-primary"
                 >
-                  <Shield className="h-4 w-4 mr-2" />
-                  Detect
+                  <Search className="h-4 w-4 mr-2" />
+                  Scanner
                 </Button>
                 <Button
                   variant="ghost"
@@ -151,7 +161,7 @@ export default function Detect() {
           )}
         </main>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation: Home → Dashboard → PhishGuard → History */}
         <div className="fixed bottom-0 left-0 right-0 md:hidden border-t border-border/50 backdrop-blur-sm bg-background/90 p-2">
           <div className="flex items-center justify-around">
             <Button
@@ -166,10 +176,19 @@ export default function Detect() {
             <Button
               variant="ghost"
               size="sm"
+              onClick={() => navigate("/dashboard")}
               className="flex flex-col items-center gap-1 h-auto py-2"
             >
-              <Shield className="h-5 w-5 text-primary" />
-              <span className="text-xs font-mono text-primary">Detect</span>
+              <LayoutDashboard className="h-5 w-5 text-muted-foreground" />
+              <span className="text-xs font-mono text-muted-foreground">Dashboard</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex flex-col items-center gap-1 h-auto py-2"
+            >
+              <Search className="h-5 w-5 text-primary" />
+              <span className="text-xs font-mono text-primary">Scanner</span>
             </Button>
             <Button
               variant="ghost"

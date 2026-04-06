@@ -2,14 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { UserScanHistory } from "@/components/UserScanHistory";
+import { SecurityScanner } from "@/components/SecurityScanner";
 import { SecurityScanHistory } from "@/components/SecurityScanHistory";
-import { Shield, LogOut, History, Home, LayoutDashboard, Search } from "lucide-react";
+import { Shield, LogOut, Home, History, Globe, Search, LayoutDashboard } from "lucide-react";
 
-export default function HistoryPage() {
+export default function SecureScan() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<"phishing" | "security">("phishing");
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const handleSignOut = async () => {
     await signOut();
@@ -22,10 +22,11 @@ export default function HistoryPage() {
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-[100px]" />
+        <div className="absolute top-1/2 right-0 w-72 h-72 bg-emerald-500/5 rounded-full blur-[100px]" />
       </div>
 
       <div className="relative z-10">
-        {/* Navigation: Home → Dashboard → PhishGuard → History */}
+        {/* Navigation */}
         <nav className="border-b border-border/50 backdrop-blur-sm bg-background/50 sticky top-0 z-50">
           <div className="container px-4 py-4 flex items-center justify-between">
             <div className="flex items-center gap-6">
@@ -51,6 +52,23 @@ export default function HistoryPage() {
                 <Button
                   variant="ghost"
                   size="sm"
+                  onClick={() => navigate("/detect")}
+                  className="font-mono text-sm text-muted-foreground hover:text-foreground"
+                >
+                  <Search className="h-4 w-4 mr-2" />
+                  Phish Detect
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="font-mono text-sm text-primary"
+                >
+                  <Globe className="h-4 w-4 mr-2" />
+                  Secure Scan
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => navigate("/dashboard")}
                   className="font-mono text-sm text-muted-foreground hover:text-foreground"
                 >
@@ -60,16 +78,8 @@ export default function HistoryPage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => navigate("/detect")}
+                  onClick={() => navigate("/history")}
                   className="font-mono text-sm text-muted-foreground hover:text-foreground"
-                >
-                  <Search className="h-4 w-4 mr-2" />
-                  Scanner
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="font-mono text-sm text-primary"
                 >
                   <History className="h-4 w-4 mr-2" />
                   History
@@ -95,48 +105,53 @@ export default function HistoryPage() {
 
         {/* Main Content */}
         <main className="container px-4 py-12 space-y-8">
+          {/* Header */}
           <div className="text-center space-y-4">
             <h1 className="text-3xl font-bold">
-              <span className="text-primary cyber-text-glow">Scan</span> History
+              <span className="text-primary cyber-text-glow">Secure</span> Scan
             </h1>
-            <p className="text-muted-foreground font-mono max-w-md mx-auto">
-              View all your phishing detection and vulnerability check history
+            <p className="text-muted-foreground font-mono max-w-lg mx-auto">
+              Analyze websites for security vulnerabilities — SSL, headers, cookies, open redirects, and more
             </p>
           </div>
 
-          {/* Tab Switcher */}
-          <div className="flex justify-center">
-            <div className="inline-flex bg-card/60 border border-border/50 rounded-xl p-1 gap-1">
-              <button
-                onClick={() => setActiveTab("phishing")}
-                className={`px-5 py-2.5 rounded-lg font-mono text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
-                  activeTab === "phishing"
-                    ? "bg-primary/20 text-primary border border-primary/30 shadow-[0_0_15px_hsl(170_100%_50%/0.15)]"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
-                }`}
-              >
-                <Shield className="h-4 w-4" />
-                Phishing Scans
-              </button>
-              <button
-                onClick={() => setActiveTab("security")}
-                className={`px-5 py-2.5 rounded-lg font-mono text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
-                  activeTab === "security"
-                    ? "bg-primary/20 text-primary border border-primary/30 shadow-[0_0_15px_hsl(170_100%_50%/0.15)]"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
-                }`}
-              >
-                <Search className="h-4 w-4" />
-                Vulnerability Checks
-              </button>
-            </div>
-          </div>
+          {/* Scanner */}
+          <SecurityScanner onScanComplete={() => setRefreshKey(k => k + 1)} />
 
-          {/* History Table */}
-          {activeTab === "phishing" ? <UserScanHistory /> : <SecurityScanHistory />}
+          {/* Scan Features Info */}
+          <section className="max-w-3xl mx-auto">
+            <div className="cyber-border bg-card/50 backdrop-blur-sm rounded-xl p-6">
+              <h3 className="font-mono text-sm font-semibold text-primary mb-4 flex items-center gap-2">
+                <Globe className="h-4 w-4" />
+                Security Checks Performed
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm font-mono text-muted-foreground">
+                {[
+                  "🔒 SSL / TLS encryption",
+                  "🛡️ Security headers analysis",
+                  "🍪 Cookie security audit",
+                  "⚡ Mixed content detection",
+                  "🌐 Domain reputation check",
+                  "⚙️ Technology fingerprinting",
+                  "↪️ Open redirect testing",
+                  "📄 Information disclosure scan",
+                  "🔗 Subdomain structure analysis",
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-2 p-2 rounded-lg hover:bg-muted/20 transition-colors">
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Security Scan History */}
+          <section className="w-full pt-8 border-t border-border/30">
+            <SecurityScanHistory key={refreshKey} />
+          </section>
         </main>
 
-        {/* Mobile Navigation: Home → Dashboard → PhishGuard → History */}
+        {/* Mobile Navigation */}
         <div className="fixed bottom-0 left-0 right-0 md:hidden border-t border-border/50 backdrop-blur-sm bg-background/90 p-2">
           <div className="flex items-center justify-around">
             <Button
@@ -151,28 +166,37 @@ export default function HistoryPage() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate("/dashboard")}
-              className="flex flex-col items-center gap-1 h-auto py-2"
-            >
-              <LayoutDashboard className="h-5 w-5 text-muted-foreground" />
-              <span className="text-xs font-mono text-muted-foreground">Dashboard</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
               onClick={() => navigate("/detect")}
               className="flex flex-col items-center gap-1 h-auto py-2"
             >
               <Search className="h-5 w-5 text-muted-foreground" />
-              <span className="text-xs font-mono text-muted-foreground">Scanner</span>
+              <span className="text-xs font-mono text-muted-foreground">Phish</span>
             </Button>
             <Button
               variant="ghost"
               size="sm"
               className="flex flex-col items-center gap-1 h-auto py-2"
             >
-              <History className="h-5 w-5 text-primary" />
-              <span className="text-xs font-mono text-primary">History</span>
+              <Globe className="h-5 w-5 text-primary" />
+              <span className="text-xs font-mono text-primary">Scan</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/dashboard")}
+              className="flex flex-col items-center gap-1 h-auto py-2"
+            >
+              <LayoutDashboard className="h-5 w-5 text-muted-foreground" />
+              <span className="text-xs font-mono text-muted-foreground">Dash</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/history")}
+              className="flex flex-col items-center gap-1 h-auto py-2"
+            >
+              <History className="h-5 w-5 text-muted-foreground" />
+              <span className="text-xs font-mono text-muted-foreground">History</span>
             </Button>
           </div>
         </div>

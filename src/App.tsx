@@ -8,6 +8,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import Detect from "./pages/Detect";
+import Dashboard from "./pages/Dashboard";
 import HistoryPage from "./pages/HistoryPage";
 import NotFound from "./pages/NotFound";
 
@@ -28,6 +29,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Detect />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
                 </ProtectedRoute>
               }
             />

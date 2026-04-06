@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Shield, AlertTriangle, CheckCircle, Loader2, Search } from "lucide-react";
+import { Shield, AlertTriangle, CheckCircle, Loader2, Search, Scan } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { detectPhishing } from "@/lib/phishingDetection";
 import { UserScanHistoryRef } from "./UserScanHistory";
+import { SecurityScanner } from "./SecurityScanner";
 
 interface ScanResult {
   result: "safe" | "phishing" | "suspicious";
@@ -23,6 +24,7 @@ export function PhishingScanner({ onScanningChange }: PhishingScannerProps) {
   const [input, setInput] = useState("");
   const [isScanning, setIsScanning] = useState(false);
   const [result, setResult] = useState<ScanResult | null>(null);
+  const [showVulnCheck, setShowVulnCheck] = useState(false);
   const { user } = useAuth();
 
   const handleScan = async () => {
@@ -34,11 +36,12 @@ export function PhishingScanner({ onScanningChange }: PhishingScannerProps) {
     setIsScanning(true);
     onScanningChange?.(true);
     setResult(null);
+    setShowVulnCheck(false);
 
     try {
       // Perform local phishing detection
       const detectionResult = detectPhishing(input.trim());
-      
+
       // Save to database
       if (user?.id) {
         console.log('Saving scan for user:', user.id);
@@ -66,7 +69,7 @@ export function PhishingScanner({ onScanningChange }: PhishingScannerProps) {
 
       setResult(detectionResult);
       toast.success("Scan completed successfully");
-      
+
       // Trigger history refresh
       if (UserScanHistoryRef.current) {
         setTimeout(() => {
@@ -82,9 +85,21 @@ export function PhishingScanner({ onScanningChange }: PhishingScannerProps) {
     }
   };
 
+  // Check if the input looks like a URL (for vulnerability check eligibility)
+  const isInputUrl = (text: string): boolean => {
+    const trimmed = text.trim().toLowerCase();
+    return trimmed.startsWith('http://') || trimmed.startsWith('https://') || /^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}/.test(trimmed);
+  };
+
+  // Show vulnerability check button when: safe result, ≥80% confidence, and input is a URL
+  const canCheckVulnerabilities = result &&
+    result.result === "safe" &&
+    result.confidence >= 80 &&
+    isInputUrl(input);
+
   const getResultStyles = () => {
     if (!result) return {};
-    
+
     switch (result.result) {
       case "safe":
         return {
@@ -125,7 +140,7 @@ export function PhishingScanner({ onScanningChange }: PhishingScannerProps) {
             <span className="text-primary">$</span>
             <span>Enter URL or paste email content for analysis</span>
           </div>
-          
+
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -198,14 +213,13 @@ export function PhishingScanner({ onScanningChange }: PhishingScannerProps) {
             </div>
             <div className="h-3 bg-background/50 rounded-full overflow-hidden">
               <div
-                className={`h-full rounded-full transition-all duration-1000 ease-out ${
-                  result.result === "safe"
+                className={`h-full rounded-full transition-all duration-1000 ease-out ${result.result === "safe"
                     ? "bg-success"
                     : result.result === "phishing"
-                    ? "bg-destructive"
-                    : "bg-warning"
-                }`}
-                style={{ 
+                      ? "bg-destructive"
+                      : "bg-warning"
+                  }`}
+                style={{
                   width: `${result.confidence}%`,
                   animation: 'progress-fill 1s ease-out forwards',
                 }}
@@ -241,6 +255,45 @@ export function PhishingScanner({ onScanningChange }: PhishingScannerProps) {
               </p>
             </div>
           )}
+
+          {/* Vulnerability Check CTA — shown when safe ≥80% and input is URL */}
+          {canCheckVulnerabilities && !showVulnCheck && (
+            <div className="border-t border-success/20 pt-5">
+              <div className="bg-primary/5 border border-primary/20 rounded-xl p-5 text-center space-y-3">
+                <div className="inline-flex p-2.5 rounded-lg bg-primary/10">
+                  <Scan className="h-6 w-6 text-primary" />
+                </div>
+                <h4 className="font-mono font-semibold text-sm">
+                  This URL is safe — want to check for vulnerabilities?
+                </h4>
+                <p className="font-mono text-xs text-muted-foreground max-w-md mx-auto">
+                  Run a deep security analysis to check SSL, headers, cookies, open redirects, and more
+                </p>
+                <Button
+                  onClick={() => setShowVulnCheck(true)}
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 font-mono font-semibold tracking-wider cyber-glow transition-all duration-300 hover:cyber-glow-strong"
+                >
+                  <Scan className="mr-2 h-4 w-4" />
+                  CHECK VULNERABILITIES
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Inline Vulnerability Scanner — shown after clicking the button */}
+      {showVulnCheck && (
+        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="text-center space-y-2">
+            <h3 className="text-xl font-bold font-mono">
+              <span className="text-primary cyber-text-glow">Checking</span> Vulnerabilities
+            </h3>
+            <p className="text-muted-foreground font-mono text-xs">
+              Comprehensive security analysis for the scanned URL
+            </p>
+          </div>
+          <SecurityScanner prefillUrl={input.trim()} autoStart />
         </div>
       )}
     </div>

@@ -47,6 +47,39 @@ export type Database = {
         }
         Relationships: []
       }
+      security_scans: {
+        Row: {
+          id: string
+          user_id: string | null
+          target_url: string
+          overall_grade: string
+          overall_score: number
+          findings: Json | null
+          scan_categories: Json | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id?: string | null
+          target_url: string
+          overall_grade: string
+          overall_score: number
+          findings?: Json | null
+          scan_categories?: Json | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string | null
+          target_url?: string
+          overall_grade?: string
+          overall_score?: number
+          findings?: Json | null
+          scan_categories?: Json | null
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

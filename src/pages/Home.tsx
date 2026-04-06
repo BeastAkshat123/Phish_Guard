@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Shield, Lock, Search, History, ChevronRight, Zap, Eye, Database } from "lucide-react";
+import { Shield, Lock, Search, History, ChevronRight, Zap, Eye, Database, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function Home() {
@@ -10,8 +10,18 @@ export default function Home() {
   const features = [
     {
       icon: Search,
-      title: "URL Analysis",
-      description: "Deep scan URLs for phishing patterns, suspicious TLDs, and typosquatting attacks",
+      title: "Phishing Detection",
+      description: "Deep scan URLs & emails for phishing patterns, suspicious TLDs, and typosquatting attacks",
+    },
+    {
+      icon: Shield,
+      title: "Vulnerability Check",
+      description: "Analyze safe websites for SSL, security headers, open redirects, and vulnerability indicators",
+    },
+    {
+      icon: Zap,
+      title: "Real-time Analysis",
+      description: "Get instant results with confidence scores, security grades, and detailed findings",
     },
     {
       icon: Eye,
@@ -19,26 +29,28 @@ export default function Home() {
       description: "Detect phishing emails by analyzing urgency language and embedded links",
     },
     {
-      icon: Zap,
-      title: "Real-time Detection",
-      description: "Get instant results with confidence scores and detailed risk factors",
+      icon: LayoutDashboard,
+      title: "Analytics Dashboard",
+      description: "Visualize your security data with charts, grade distributions, and trend analysis",
     },
     {
       icon: Database,
       title: "Scan History",
-      description: "Track all your scans with detailed logs and export capabilities",
+      description: "Track all phishing and vulnerability scans with detailed logs and management",
     },
   ];
 
   const detectionMethods = [
     "HTTPS protocol verification",
-    "URL length analysis",
-    "Special character detection",
     "Suspicious keyword scanning",
-    "IP-based URL detection",
     "Typosquatting pattern matching",
-    "URL shortener identification",
     "Email urgency language detection",
+    "SSL / TLS encryption analysis",
+    "Security headers assessment",
+    "Open redirect detection",
+    "Information disclosure scanning",
+    "Cookie security audit",
+    "Domain reputation checking",
   ];
 
   return (
@@ -111,7 +123,7 @@ export default function Home() {
                   <span className="text-foreground">Guard</span>
                 </h1>
                 <p className="text-xl md:text-2xl text-muted-foreground font-mono max-w-2xl mx-auto">
-                  Advanced phishing detection system powered by heuristic analysis
+                  Phishing detection + website security scanning — powered by heuristic analysis
                 </p>
               </div>
 
@@ -136,12 +148,7 @@ export default function Home() {
                 </Button>
               </div>
 
-              {/* Version Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card/50 border border-border/50 font-mono text-xs text-muted-foreground">
-                <span className="text-primary">v1.0.0</span>
-                <span className="text-border">|</span>
-                <span>B.Tech CSE Final Year Project</span>
-              </div>
+
             </div>
           </div>
         </section>
@@ -158,7 +165,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
               {features.map((feature, index) => (
                 <div
                   key={index}
@@ -184,7 +191,7 @@ export default function Home() {
                   <span className="text-primary">&gt;</span> Detection Methods
                 </h2>
                 <p className="text-muted-foreground font-mono">
-                  Multi-layered heuristic analysis for accurate threat detection
+                  Multi-layered heuristic analysis across phishing detection and website security scanning
                 </p>
               </div>
 
@@ -235,7 +242,7 @@ export default function Home() {
               <span className="font-mono text-sm">PhishGuard</span>
             </div>
             <p className="font-mono text-xs text-muted-foreground/60">
-              B.Tech CSE Final Year Project • Cybersecurity Phishing Detection System
+              Cybersecurity Platform — Phishing Detection + Vulnerability Analysis
             </p>
             <div className="flex items-center justify-center gap-4 text-xs font-mono text-muted-foreground/50">
               <span>React + TypeScript</span>
